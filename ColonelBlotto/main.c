@@ -5,11 +5,29 @@
 #include "./include/xorshiro256.h"
 #include "./include/tree.h"
 
+// Colonel Blotto is a 2-players 1-turn game in which each player deploy N soldiers among M battlefields.
+// After deployment, for each battlefield, the player who deployed the bigger amount of soldiers wins it.
+// The player who won the most battlefield wins the game.
+// For instance, a following deployment lets player 1 win :
+// 2 - 1 for battlefield 1
+// 2 - 1 for battlefield 2
+// 0 - 2 for battlefield 3
+
+// A usefull deployment representation is a M-array, which represents the M different battlefield.
+// Each element of the array can have N different values, which represents the N available soldiers,
+// with the condition than Sum(array) = N.
+// Since each soldier can be deployed independantly, the number of pure strategy are then M^N.
+// Instead of using N-array, we will convert it into an hexa int.
+// Thus, the previous example will lead to the following array : 
+// Player 1 : [2, 2, 0] => 2 + 2*3 + 0*3^2 = 8
+// Player 2 : [1, 1, 2] => 1 + 1*3 + 2*3^2 = 22
+// With this representation, one can show the number of strategy are K = (M+N-1 M-1)
 #define NUMBER_BATTLEFIELD 3
 #define NUMBER_SOLDIER 5
 
 static size_t NUMBER_PURE_STRATEGY = (size_t)(pow(NUMBER_BATTLEFIELD, NUMBER_SOLDIER) + 0.5f);
 
+// strategy and utility are then K arrays
 typedef uint16_t* strategy_t;
 typedef int8_t* utility_t;
 
@@ -29,6 +47,7 @@ void init_player(player_t* p_player) {
     p_player->sum_regret = 0;
 }
 
+// compute sum of regrets
 void sum_regret(player_t* p_player) {
     p_player->sum_regret = 0;
     for(int i = 0; i < NUMBER_PURE_STRATEGY; i++) {
@@ -179,7 +198,7 @@ int main(void) {
     strategy_t pure_strat = calloc(NUMBER_PURE_STRATEGY, sizeof(uint16_t));
     int nb_strat = 0;
 
-    size_t ntree = (size_t)((pow(NUMBER_BATTLEFIELD, 6) - 1) / 2 + 0.5f);
+    size_t ntree = (size_t)((pow(NUMBER_BATTLEFIELD, 6) - 1) / 2 + 0.5f); // ???
     build_tree(&tree, ntree);
     read_tree(&tree, pure_strat, &nb_strat);
 
