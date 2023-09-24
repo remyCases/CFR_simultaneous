@@ -138,12 +138,6 @@ int main(int argc, char *argv[]) {
     }
     printf("\n");
 
-    uint64_t N = 100;
-    if (argc >= 3) {
-        N = atol(argv[2]);
-        printf("Executing %llu steps\n", N);
-    }
-
     player_t X;
     player_t Y;
     init_player(&X, nb_pure_strategies);
@@ -154,11 +148,16 @@ int main(int argc, char *argv[]) {
     compute_all_utilities(pure_strat, &utilities, result_game);
 
     if (nb_pure_strategies < 15) {
-        print_utilities(&utilities);
+        print_utilities(pure_strat, &utilities);
     }
 
     set_seed(10);
 
+     uint64_t N = 100;
+    if (argc >= 3) {
+        N = atol(argv[2]);
+        printf("Executing Monte-Carlo CRF for %llu steps\n", N);
+    }
     for(uint64_t j = 0; j < N; j++) {
         get_strategies(&X, &Y);
         get_actions(&X, &Y);

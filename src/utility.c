@@ -39,11 +39,14 @@ void accumulate_regret(player_t* p_player, player_t* p_player_other, utility_t* 
     }
 }
 
-void print_utilities(utility_t* p_utility) {
-    printf("Utility Matrix :\n");
-    for(uint16_t i = 0; i < p_utility->nb_strat; i++) {
-        for(uint16_t j = 0; j < p_utility->nb_strat; j++) {
-            printf("%d\t|", get_utilities(p_utility, i,j));
+void print_utilities(uint16_t* pure_strat, utility_t* p_utility) {
+    printf("Utility Matrix :\nrows: player1 \\ columns: player2\n");
+    for(uint16_t i = 0; i < p_utility->nb_strat+1; i++) {
+        for(uint16_t j = 0; j < p_utility->nb_strat+1; j++) {
+            if (!j && !i) printf("\t|");
+            if (j && !i) printf("%d\t|", pure_strat[j-1]);
+            if (!j && i) printf("%d\t|", pure_strat[i-1]);
+            else if (i) printf("%d\t|", get_utilities(p_utility, i-1,j-1));
         }
         printf("\n");
     }

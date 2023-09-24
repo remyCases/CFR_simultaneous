@@ -19,5 +19,5 @@ void free_utility(utility_t* p_utility);
 void compute_all_utilities(uint16_t* pure_strat, utility_t* p_utilitiy, int8_t (*result_game)(uint16_t, uint16_t));
 void accumulate_regret(player_t* p_player, player_t* p_player_other, utility_t* p_utility);
 
-void print_utilities(utility_t* p_utility);
+void print_utilities(uint16_t* pure_strat, utility_t* p_utility);
 #endif // UTILITY_H__
