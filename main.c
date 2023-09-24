@@ -7,8 +7,6 @@
 #include "./include/utility.h"
 #include "./include/combinatory.h"
 
-#define STR(X) #X
-
 typedef enum RPS {
     ROCK,
     PAPER,
@@ -16,9 +14,9 @@ typedef enum RPS {
     NUMBER_CASES,
 } RPS;
 
-#define NUMBER_BATTLEFIELD 3
-#define NUMBER_SOLDIER 2
-#define Z (NUMBER_BATTLEFIELD + NUMBER_SOLDIER - 1)
+static uint16_t number_battlefield  = 3;
+static uint16_t number_soldier = 5;
+#define Z (number_battlefield + number_soldier - 1)
 
 int8_t result_game_rps(uint16_t a, uint16_t b) {
     if (a == b) return 0;
@@ -30,7 +28,7 @@ int8_t result_game_rps(uint16_t a, uint16_t b) {
 int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
     int8_t sum_a = 0;
     int8_t sum_b = 0;
-    uint16_t base = Z;
+    uint16_t base = number_battlefield <= 3 ? Z : Z + 3 - number_battlefield;
 
     uint16_t a = coded_strat_a%base;
     uint16_t a_prev = a;
@@ -40,17 +38,17 @@ int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
     coded_strat_b = coded_strat_b/base;
     base++;
 
-    for(uint16_t i = 0; i < NUMBER_BATTLEFIELD; i++) {
+    for(uint16_t i = 0; i < number_battlefield; i++) {
         if(a > b) {
             sum_a++;
         } else if(a < b) {
             sum_b++;
         }
         
-        if (i < NUMBER_BATTLEFIELD - 2) {
+        if (i < number_battlefield - 2) {
             a = coded_strat_a%base - a_prev - 1;
             b = coded_strat_b%base - b_prev - 1;
-        } else if (i == NUMBER_BATTLEFIELD - 2) {
+        } else if (i == number_battlefield - 2) {
             a = Z - a_prev - 1;
             b = Z - b_prev - 1;
         }
@@ -70,14 +68,36 @@ int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
     }
 }
 
+void print_blotto_strategy(uint16_t coded_strat) {
+    uint16_t base = number_battlefield <= 3 ? Z : Z + 3 - number_battlefield;
+    uint16_t a = coded_strat%base;
+    uint16_t a_prev = a;
+    coded_strat = coded_strat/base;
+    base++;
+
+    for(uint16_t i = 0; i < number_battlefield; i++) {
+        printf("%d, ", a);
+        if (i < number_battlefield - 2) {
+            a = coded_strat%base - a_prev - 1;
+        } else if (i == number_battlefield - 2) {
+            a = Z - a_prev - 1;
+        }
+        a_prev = coded_strat%base;
+        coded_strat = coded_strat/base;
+        base++;
+    }
+    printf("\n");
+}
+
 int main(int argc, char *argv[]) {
     
     uint16_t nb_pure_strategies = 0;
     uint16_t* pure_strat;
+    uint16_t* c;
     int8_t (*result_game)(uint16_t, uint16_t);
 
     if (argc >= 2) {
-        if (!strcmp(argv[1], "RPS")) 
+        if (!strcmp(argv[1], "RPS"))
         {
             nb_pure_strategies = NUMBER_CASES;
             pure_strat = calloc(nb_pure_strategies, sizeof(uint16_t));
@@ -88,10 +108,16 @@ int main(int argc, char *argv[]) {
         } 
         else if (!strcmp(argv[1], "Blotto")) 
         {
-            nb_pure_strategies = (uint16_t)binomial_coefficient_ym(Z, NUMBER_BATTLEFIELD - 1);
-            uint16_t c[NUMBER_BATTLEFIELD - 1 + 2];
+            if(argc >= 4) {
+                number_battlefield = atol(argv[3]);
+            }
+            if(argc >= 5) {
+                number_soldier = atol(argv[4]);
+            }
+            nb_pure_strategies = (uint16_t)binomial_coefficient_ym(Z, number_battlefield - 1);
+            c = calloc(number_battlefield - 1 + 2, sizeof(uint16_t));
             pure_strat = calloc(nb_pure_strategies, sizeof(uint16_t));
-            lexicographic_combinations(Z, NUMBER_BATTLEFIELD - 1, c, pure_strat);
+            lexicographic_combinations(Z, number_battlefield - 1, c, pure_strat);
             result_game = result_game_blotto;
         } 
         else 
@@ -103,25 +129,33 @@ int main(int argc, char *argv[]) {
 
     printf("Actions available\n");
     for(uint16_t i = 0; i < nb_pure_strategies; i++) {
-        printf("%d\n",pure_strat[i]);
+        if (!strcmp(argv[1], "Blotto")) {
+            printf("%d:\t", pure_strat[i]);
+            print_blotto_strategy(pure_strat[i]);
+        } else { 
+            printf("%d\n", pure_strat[i]);
+        }
     }
     printf("\n");
 
     uint64_t N = 100;
-    if (argc == 3) {
+    if (argc >= 3) {
         N = atol(argv[2]);
         printf("Executing %llu steps\n", N);
     }
 
     player_t X;
     player_t Y;
-    init_player(&X, nb_pure_strategies); 
-    init_player(&Y, nb_pure_strategies); 
+    init_player(&X, nb_pure_strategies);
+    init_player(&Y, nb_pure_strategies);
 
     utility_t utilities;
     init_utility(&utilities, nb_pure_strategies);
     compute_all_utilities(pure_strat, &utilities, result_game);
-    print_utilities(&utilities);
+
+    if (nb_pure_strategies < 15) {
+        print_utilities(&utilities);
+    }
 
     set_seed(10);
 
@@ -139,6 +173,7 @@ int main(int argc, char *argv[]) {
     free_player(&X);
     free_player(&Y);
     free_utility(&utilities);
+    free(c);
     free(pure_strat);
     return EXIT_SUCCESS;
 }
