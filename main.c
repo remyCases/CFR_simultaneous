@@ -92,9 +92,9 @@ void print_blotto_strategy(uint16_t coded_strat) {
 int main(int argc, char *argv[]) {
     
     uint16_t nb_pure_strategies = 0;
-    uint16_t* pure_strat;
-    uint16_t* c;
-    int8_t (*result_game)(uint16_t, uint16_t);
+    uint16_t* pure_strat = NULL;
+    uint16_t* c = NULL;
+    int8_t (*result_game)(uint16_t, uint16_t) = NULL;
 
     if (argc >= 2) {
         if (!strcmp(argv[1], "RPS"))
