@@ -112,3 +112,8 @@ void long_jump(void) {
 	s[2] = s2;
 	s[3] = s3;
 }
+
+double to_double(uint64_t x) {
+    const union { uint64_t i; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
+    return u.d - 1.0;
+}

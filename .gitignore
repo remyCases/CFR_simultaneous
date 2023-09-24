@@ -1,2 +1,6 @@
-RockPaperScissor/*.exe
-ColonelBlotto/*.exe
+*.cmake
+*.exe
+
+# generic folder
+build
+.vscode
