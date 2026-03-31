@@ -22,7 +22,7 @@ ifeq ($(DETECTED_OS), Linux)
 	VENV=venv
 	BIN=$(VENV)/bin
 	PIP=$(BIN)/pip
-	VENV_MYPY=$(BIN)/$(MYPY)
+	VENV_MYPY=$(BIN)/mypy
 	VENV_PYTHON=$(BIN)/$(PYTHON)
 	SHELL_EXEC = /bin/bash
 	ECHO = echo
@@ -38,7 +38,7 @@ else
 	VENV=.venv
 	BIN=$(VENV)\Scripts
 	PIP=$(BIN)\pip
-	VENV_MYPY=$(BIN)\$(MYPY)
+	VENV_MYPY=$(BIN)\mypy
 	VENV_PYTHON=$(BIN)\$(PYTHON)
 	SHELL_EXEC = powershell
 	ECHO = powershell -Command "Write-Host"
@@ -69,6 +69,21 @@ run_rps:
 
 run_blt:
 	./build/bin/main.exe Blotto
+
+# install python venv
+install_venv:
+	$(PYTHON) -m venv --clear $(VENV)
+	$(VENV_PYTHON) -m pip install --upgrade pip
+
+install: install_venv
+	$(PIP) install --upgrade -r requirements.txt
+
+# type annotations
+mypy:
+	$(VENV_MYPY) --strict .
+
+anim:
+	$(VENV_PYTHON) compute_animation_from_export.py
 
 clean:
 	@$(RM) ./build

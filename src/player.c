@@ -136,18 +136,20 @@ void print_avg_strategies(uint16_t* pure_strat, player_t* p_player, player_t* p_
 
 void export_pure_strategies(FILE* f, uint16_t* pure_strat, uint16_t nstrat) 
 {
-    for(int i = 0; i < nstrat; i++) 
+    fprintf(f, "%d", pure_strat[0]);
+    for(int i = 1; i < nstrat; i++) 
     {
-        fprintf(f, "%d;", pure_strat[i]);
+        fprintf(f, ";%d", pure_strat[i]);
     }
     fprintf(f, "\n");
 }
 
 void export_avg_strategies(FILE* f, player_t* p_player) 
 {
-    for(int i = 0; i < p_player->nb_cases; i++) 
+    fprintf(f, "%.7f", p_player->avg_strategy[0]);
+    for(int i = 1; i < p_player->nb_cases; i++) 
     {
-        fprintf(f, "%.7f;", p_player->avg_strategy[i]);
+        fprintf(f, ";%.7f", p_player->avg_strategy[i]);
     }
     fprintf(f, "\n");
 }

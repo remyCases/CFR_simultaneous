@@ -18,6 +18,8 @@ static uint16_t number_battlefield  = 3;
 static uint16_t number_soldier = 5;
 // Z is the number of gaps in the stars-and-bars problem
 #define Z (number_battlefield + number_soldier - 1)
+// cant encode using combinatorial_number_system on a uint16 with Z exceeding that value
+#define MAX_Z 18
 
 int8_t result_game_rps(uint16_t a, uint16_t b) {
     if (a == b) return 0;
@@ -100,6 +102,11 @@ int main(int argc, char *argv[])
             if(argc >= 5)
             {
                 number_soldier = atol(argv[4]);
+            }
+            if (Z > MAX_Z) 
+            {
+                printf("Can't encode combinations if Z>18 since they are encoded using an uint16. Currently the Z value is %u\n", Z);
+                return EXIT_SUCCESS;
             }
             printf("Colonel Blotto with %u battlefields and %u soldiers\n", number_battlefield, number_soldier);
             nb_pure_strategies = (uint16_t)binomial_coefficient_ym(Z, number_battlefield - 1);
