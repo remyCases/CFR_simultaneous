@@ -124,22 +124,33 @@ void print_blotto_strategy(uint16_t coded_strat, uint16_t nb_battlefield, uint16
     }
 }
 
-void print_avg_strategies(uint16_t* pure_strat, player_t* p_player, player_t* p_player_other) 
+void print_avg_strategies(player_t* p_player, player_t* p_player_other, uint16_t b, uint16_t s) 
 {
     printf("Nash strategies :\n");
     printf("Action:\tplayer 1\tplayer 2\n");
     for(int i = 0; i < p_player->nb_cases; i++) 
     {
-        printf("%d:\t%.7f\t%.7f\n", pure_strat[i], p_player->avg_strategy[i], p_player_other->avg_strategy[i]);
+        // TODO : make it not specific to blotto
+        uint16_t* d = decode_blotto_configuration(i, b, s);
+        for (int j = 0; j < b; j++)
+        {
+            printf("%u, ", d[j]);
+        }
+        free(d);
+        printf(
+            ":\t%.7f\t%.7f\n",
+            p_player->avg_strategy[i],
+            p_player_other->avg_strategy[i]
+        );
     }
 }
 
-void export_pure_strategies(FILE* f, uint16_t* pure_strat, uint16_t nstrat) 
+void export_pure_strategies(FILE* f, uint16_t nstrat) 
 {
-    fprintf(f, "%d", pure_strat[0]);
+    fprintf(f, "%d", 0);
     for(int i = 1; i < nstrat; i++) 
     {
-        fprintf(f, ";%d", pure_strat[i]);
+        fprintf(f, ";%d", i);
     }
     fprintf(f, "\n");
 }

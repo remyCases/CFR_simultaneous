@@ -31,36 +31,25 @@ int8_t result_game_rps(uint16_t a, uint16_t b) {
 int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
     int8_t sum_a = 0;
     int8_t sum_b = 0;
-    uint16_t base = number_battlefield <= 3 ? Z : Z + 3 - number_battlefield;
+    uint16_t* strat_a = decode_blotto_configuration(coded_strat_a, number_battlefield, number_soldier);
+    uint16_t* start_b = decode_blotto_configuration(coded_strat_b, number_battlefield, number_soldier);
 
-    uint16_t a = coded_strat_a%base;
-    uint16_t a_prev = a;
-    uint16_t b = coded_strat_b%base;
-    uint16_t b_prev = b;
-    coded_strat_a = coded_strat_a/base;
-    coded_strat_b = coded_strat_b/base;
-    base++;
+    uint16_t a;
+    uint16_t b;
 
-    for(uint16_t i = 0; i < number_battlefield; i++) {
+    for(uint16_t i = 0; i < number_battlefield; i++) 
+    {
+        a = strat_a[i];
+        b = start_b[i];
         if(a > b) {
             sum_a++;
         } else if(a < b) {
             sum_b++;
         }
-        
-        if (i < number_battlefield - 2) {
-            a = coded_strat_a%base - a_prev - 1;
-            b = coded_strat_b%base - b_prev - 1;
-        } else if (i == number_battlefield - 2) {
-            a = Z - a_prev - 1;
-            b = Z - b_prev - 1;
-        }
-        a_prev = coded_strat_a%base;
-        b_prev = coded_strat_b%base;
-        coded_strat_a = coded_strat_a/base;
-        coded_strat_b = coded_strat_b/base;
-        base++;
     }
+
+    free(strat_a);
+    free(start_b);
 
     if(sum_a > sum_b) {
         return 1;
@@ -77,9 +66,7 @@ int main(int argc, char *argv[])
     FILE* f = fopen("export_avg_strategy.csv", "w");
 
     uint16_t nb_pure_strategies = 0;
-    uint16_t* pure_strat = NULL;
     // temporary array used in the algo T for representing one combination
-    uint16_t* c = NULL;
     int8_t (*result_game)(uint16_t, uint16_t) = NULL;
 
     if (argc >= 2) 
@@ -87,10 +74,6 @@ int main(int argc, char *argv[])
         if (!strcmp(argv[1], "RPS"))
         {
             nb_pure_strategies = NUMBER_CASES;
-            pure_strat = calloc(nb_pure_strategies, sizeof(uint16_t));
-            pure_strat[0] = ROCK;
-            pure_strat[1] = PAPER;
-            pure_strat[2] = SCISSOR;
             result_game = result_game_rps;
         } 
         else if (!strcmp(argv[1], "Blotto")) 
@@ -110,9 +93,6 @@ int main(int argc, char *argv[])
             }
             printf("Colonel Blotto with %u battlefields and %u soldiers\n", number_battlefield, number_soldier);
             nb_pure_strategies = (uint16_t)binomial_coefficient_ym(Z, number_battlefield - 1);
-            c = calloc(number_battlefield + 1, sizeof(uint16_t));
-            pure_strat = calloc(nb_pure_strategies, sizeof(uint16_t));
-            lexicographic_combinations(Z, number_battlefield - 1, c, pure_strat);
             result_game = result_game_blotto;
         } 
         else 
@@ -129,14 +109,14 @@ int main(int argc, char *argv[])
 
     utility_t utilities;
     init_utility(&utilities, nb_pure_strategies);
-    compute_all_utilities(pure_strat, &utilities, result_game);
+    compute_all_utilities(&utilities, result_game);
 
     if (nb_pure_strategies < 15) 
     {
-        print_utilities(pure_strat, &utilities);
+        print_utilities(&utilities);
     }
 
-    set_seed(10);
+    set_seed(20);
 
     uint64_t N = 100;
     if (argc >= 3) 
@@ -144,7 +124,7 @@ int main(int argc, char *argv[])
         N = atol(argv[2]);
     }
     printf("Executing Monte-Carlo CRF for %llu steps\n", N);
-    export_pure_strategies(f, pure_strat, nb_pure_strategies);
+    export_pure_strategies(f, nb_pure_strategies);
     for(uint64_t j = 0; j < N; j++) 
     {
         compute_strategies(&X, &Y);
@@ -157,14 +137,12 @@ int main(int argc, char *argv[])
 
     compute_average_strategies(&X, &Y);
 
-    print_avg_strategies(pure_strat, &X, &Y);
+    print_avg_strategies(&X, &Y, number_battlefield, number_soldier);
     fflush(stdout);
 
     free_player(&X);
     free_player(&Y);
     free_utility(&utilities);
-    free(c);
-    free(pure_strat);
 
     if (f) {
         fclose(f);

@@ -18,13 +18,13 @@ void free_utility(utility_t* p_utility)
     free(p_utility->utility);
 }
 
-void compute_all_utilities(uint16_t* pure_strat, utility_t* p_utility, int8_t (*result_game)(uint16_t, uint16_t)) 
+void compute_all_utilities(utility_t* p_utility, int8_t (*result_game)(uint16_t, uint16_t)) 
 {
     for(uint16_t i = 0; i < p_utility->nb_strat; i++) 
     {
         for(uint16_t j = 0; j < p_utility->nb_strat; j++) 
         {
-            p_utility->utility[i * p_utility->nb_strat + j] = result_game(pure_strat[i], pure_strat[j]);
+            p_utility->utility[i * p_utility->nb_strat + j] = result_game(i, j);
         }
     }
 }
@@ -46,7 +46,7 @@ void accumulate_regret(player_t* p_player, player_t* p_player_other, utility_t* 
     }
 }
 
-void print_utilities(uint16_t* pure_strat, utility_t* p_utility) 
+void print_utilities(utility_t* p_utility) 
 {
     printf("Utility Matrix :\nrows: player1 \\ columns: player2\n");
     for(uint16_t i = 0; i < p_utility->nb_strat+1; i++) 
@@ -54,8 +54,8 @@ void print_utilities(uint16_t* pure_strat, utility_t* p_utility)
         for(uint16_t j = 0; j < p_utility->nb_strat+1; j++) 
         {
             if (!j && !i) printf("\t|");
-            if (j && !i) printf("%d\t|", pure_strat[j-1]);
-            if (!j && i) printf("%d\t|", pure_strat[i-1]);
+            if (j && !i) printf("%d\t|", j-1);
+            if (!j && i) printf("%d\t|", i-1);
             else if (i) printf("%d\t|", get_utility(p_utility, i-1,j-1));
         }
         printf("\n");
