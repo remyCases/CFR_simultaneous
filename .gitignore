@@ -1,5 +1,6 @@
 *.cmake
 *.exe
+*.csv
 
 # generic folder
 build

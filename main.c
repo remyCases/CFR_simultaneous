@@ -16,6 +16,7 @@ typedef enum RPS {
 
 static uint16_t number_battlefield  = 3;
 static uint16_t number_soldier = 5;
+// Z is the number of gaps in the stars-and-bars problem
 #define Z (number_battlefield + number_soldier - 1)
 
 int8_t result_game_rps(uint16_t a, uint16_t b) {
@@ -58,7 +59,7 @@ int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
         coded_strat_b = coded_strat_b/base;
         base++;
     }
-    
+
     if(sum_a > sum_b) {
         return 1;
     } else if(sum_a < sum_b) {
@@ -68,35 +69,19 @@ int8_t result_game_blotto(uint16_t coded_strat_a, uint16_t coded_strat_b) {
     }
 }
 
-void print_blotto_strategy(uint16_t coded_strat) {
-    uint16_t base = number_battlefield <= 3 ? Z : Z + 3 - number_battlefield;
-    uint16_t a = coded_strat%base;
-    uint16_t a_prev = a;
-    coded_strat = coded_strat/base;
-    base++;
+int main(int argc, char *argv[]) 
+{
+    // file where to export strategies
+    FILE* f = fopen("export_avg_strategy.csv", "w");
 
-    for(uint16_t i = 0; i < number_battlefield; i++) {
-        printf("%d, ", a);
-        if (i < number_battlefield - 2) {
-            a = coded_strat%base - a_prev - 1;
-        } else if (i == number_battlefield - 2) {
-            a = Z - a_prev - 1;
-        }
-        a_prev = coded_strat%base;
-        coded_strat = coded_strat/base;
-        base++;
-    }
-    printf("\n");
-}
-
-int main(int argc, char *argv[]) {
-    
     uint16_t nb_pure_strategies = 0;
     uint16_t* pure_strat = NULL;
+    // temporary array used in the algo T for representing one combination
     uint16_t* c = NULL;
     int8_t (*result_game)(uint16_t, uint16_t) = NULL;
 
-    if (argc >= 2) {
+    if (argc >= 2) 
+    {
         if (!strcmp(argv[1], "RPS"))
         {
             nb_pure_strategies = NUMBER_CASES;
@@ -108,14 +93,17 @@ int main(int argc, char *argv[]) {
         } 
         else if (!strcmp(argv[1], "Blotto")) 
         {
-            if(argc >= 4) {
+            if(argc >= 4)
+            {
                 number_battlefield = atol(argv[3]);
             }
-            if(argc >= 5) {
+            if(argc >= 5)
+            {
                 number_soldier = atol(argv[4]);
             }
+            printf("Colonel Blotto with %u battlefields and %u soldiers\n", number_battlefield, number_soldier);
             nb_pure_strategies = (uint16_t)binomial_coefficient_ym(Z, number_battlefield - 1);
-            c = calloc(number_battlefield - 1 + 2, sizeof(uint16_t));
+            c = calloc(number_battlefield + 1, sizeof(uint16_t));
             pure_strat = calloc(nb_pure_strategies, sizeof(uint16_t));
             lexicographic_combinations(Z, number_battlefield - 1, c, pure_strat);
             result_game = result_game_blotto;
@@ -127,17 +115,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    printf("Actions available\n");
-    for(uint16_t i = 0; i < nb_pure_strategies; i++) {
-        if (!strcmp(argv[1], "Blotto")) {
-            printf("%d:\t", pure_strat[i]);
-            print_blotto_strategy(pure_strat[i]);
-        } else { 
-            printf("%d\n", pure_strat[i]);
-        }
-    }
-    printf("\n");
-
     player_t X;
     player_t Y;
     init_player(&X, nb_pure_strategies);
@@ -147,24 +124,31 @@ int main(int argc, char *argv[]) {
     init_utility(&utilities, nb_pure_strategies);
     compute_all_utilities(pure_strat, &utilities, result_game);
 
-    if (nb_pure_strategies < 15) {
+    if (nb_pure_strategies < 15) 
+    {
         print_utilities(pure_strat, &utilities);
     }
 
     set_seed(10);
 
-     uint64_t N = 100;
-    if (argc >= 3) {
+    uint64_t N = 100;
+    if (argc >= 3) 
+    {
         N = atol(argv[2]);
-        printf("Executing Monte-Carlo CRF for %llu steps\n", N);
     }
-    for(uint64_t j = 0; j < N; j++) {
-        get_strategies(&X, &Y);
-        get_actions(&X, &Y);
+    printf("Executing Monte-Carlo CRF for %llu steps\n", N);
+    export_pure_strategies(f, pure_strat, nb_pure_strategies);
+    for(uint64_t j = 0; j < N; j++) 
+    {
+        compute_strategies(&X, &Y);
+        compute_actions(&X, &Y);
         accumulate_regret(&X, &Y, &utilities);
+        
+        compute_average_strategies(&X, &Y);
+        export_avg_strategies(f, &X);
     }
 
-    get_average_strategies(&X, &Y);
+    compute_average_strategies(&X, &Y);
 
     print_avg_strategies(pure_strat, &X, &Y);
     fflush(stdout);
@@ -174,5 +158,9 @@ int main(int argc, char *argv[]) {
     free_utility(&utilities);
     free(c);
     free(pure_strat);
+
+    if (f) {
+        fclose(f);
+    }
     return EXIT_SUCCESS;
 }

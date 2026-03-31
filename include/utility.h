@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "../include/player.h"
 
+// Represent utility matrix
 typedef struct utility_s {
     uint16_t nb_strat;
     int8_t* utility;

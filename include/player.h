@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "xorshiro256.h"
 
+// structure that holds all information needed for a CRF
 typedef struct player_s {
     uint16_t nb_cases;
     int32_t* cumulative_regret;
@@ -22,9 +23,13 @@ typedef struct player_s {
 void init_player(player_t* p_player, uint16_t nb_pure_strategy);
 void free_player(player_t* p_player);
 
-void get_strategies(player_t* p_player, player_t* p_player_other);
-void get_actions(player_t* p_player, player_t* p_player_other);
-void get_average_strategies(player_t* p_player, player_t* p_player_other);
+// compute functions, to be called at each iteration
+void compute_strategies(player_t* p_player, player_t* p_player_other);
+void compute_actions(player_t* p_player, player_t* p_player_other);
+void compute_average_strategies(player_t* p_player, player_t* p_player_other);
 
+// prettifying functions
 void print_avg_strategies(uint16_t* pure_strat, player_t* p_player, player_t* p_player_other);
+void export_pure_strategies(FILE* f, uint16_t* pure_strat, uint16_t nstrat);
+void export_avg_strategies(FILE* f, player_t* p_player);
 #endif // PLAYER_H__

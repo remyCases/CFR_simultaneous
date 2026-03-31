@@ -2,7 +2,7 @@
 
 Attempt to work through An Introduction to Counterfactual Regret Minimization of Todd W. Neller and Marc Lanctot.
 
-# Compile code
+## Compilation
 
 ```shell
 make build
@@ -10,14 +10,26 @@ make build
 
 Exe can be found in /build/bin
 
-# Run code
+## Execution
+
+### Examples
+
+To run examples of CRF using default values
+
+#### RPS
 
 ```shell
-.\build\bin\main.exe TYPE N 
+make run_rps
 ```
 
-Where TYPE is either `RPS` or `Blotto` and N the number of MC steps.
+```shell
+make run_blt
+```
 
-# Known issues
+### More general case
 
-Blotto resolution seems to not converge to a correct solution.
+```shell
+.\build\bin\main.exe [TYPE] [N] 
+```
+
+Where TYPE is either `RPS` or `Blotto` and `N` the number of MC steps.

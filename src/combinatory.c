@@ -23,7 +23,25 @@ uint64_t binomial_coefficient_ym(uint16_t n, uint16_t t) {
     return res;
 }
 
-uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t* coded) {
+// TODO : implement it
+void decode_combinatorial_number_system(uint16_t coded_strat, uint16_t b, uint16_t s)
+{   
+
+}
+
+void encode_combinatorial_number_system(uint16_t coded_strat, uint16_t b, uint16_t s)
+{   
+    
+}
+
+// from Knuth Donald, The Art Of Computer Programming, Volume 4A, Third Edition
+// 7.2.1.3 Generating All Combinations, p359
+// Algorithm T
+// Compute all lexicographic combination of choosing t element from a set of n elements
+// c is used as a temporary array for storing one combination
+// coded is the array of all combinations, where one combination is stored as an integer, see coding
+uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t* coded)
+{
     if (n < t) return EXIT_FAILURE;
 
     // Initialize
@@ -42,15 +60,19 @@ uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t
 
     do {
         // Visit
+
+        // a better coding system is found using the combinatorial number system
+        // 7.2.1.3 Generating All Combinations, page 360
         coded[index_coded] = 0;
-        
-        for (uint16_t i = t; i > 0; i--) {
+        for (uint16_t i = t; i > 0; i--) 
+        {
             coded[index_coded] *= (n - t + i + 1);
             coded[index_coded] += c[i-1];
         }
         index_coded++;
 
-        if (j > 0) {
+        if (j > 0) 
+        {
             x = j;
             c[j-1] = x;
             j--;
@@ -58,7 +80,8 @@ uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t
         } 
 
         // Easy Case
-        if (c[0] + 1 < c[1]) {
+        if (c[0] + 1 < c[1]) 
+        {
             c[0]++;
             continue;
         }
@@ -70,7 +93,8 @@ uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t
             x = c[j-1] + 1;
             t4_cond = x == c[j];
 
-            if (t4_cond) {
+            if (t4_cond) 
+            {
                 j++;
             }
 
@@ -80,12 +104,11 @@ uint8_t lexicographic_combinations(uint16_t n, uint16_t t, uint16_t* c, uint16_t
         end_cond = j > t;
 
         // Increase cj
-        if (!end_cond) {
+        if (!end_cond) 
+        {
             c[j-1] = x;
             j--;
         }
-        
-
     } while(!end_cond);
 
     return EXIT_SUCCESS;
