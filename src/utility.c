@@ -17,13 +17,13 @@ void free_utility(utility_t* p_utility)
     free(p_utility->utility);
 }
 
-void compute_all_utilities(utility_t* p_utility, int8_t (*result_game)(uint16_t, uint16_t)) 
+void compute_all_utilities(utility_t* p_utility, game_t* game) 
 {
     for(uint16_t i = 0; i < p_utility->nb_strat; i++) 
     {
         for(uint16_t j = 0; j < p_utility->nb_strat; j++) 
         {
-            p_utility->utility[i * p_utility->nb_strat + j] = result_game(i, j);
+            p_utility->utility[i * p_utility->nb_strat + j] = game->result(game, i, j);
         }
     }
 }

@@ -41,6 +41,16 @@ uint16_t* decode_blotto_configuration(uint16_t coded, uint16_t b, uint16_t s)
     return battlefields;
 }
 
+void print_blotto_configuration(uint16_t coded, uint16_t b, uint16_t s)
+{
+    uint16_t* d = decode_blotto_configuration(coded, b, s);
+    for (int j = 0; j < b; j++)
+    {
+        printf("%u, ", d[j]);
+    }
+    free(d);
+}
+
 // TODO : review for improvement of the naive method
 // Aviezri S. Fraenkel, Moshe Mor, Combinatorial Compression and Partitioning of Large Dictionaries,
 // The Computer Journal, Volume 26, Issue 4, November 1983, Pages 336–343, https://doi.org/10.1093/comjnl/26.4.336

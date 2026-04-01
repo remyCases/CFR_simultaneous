@@ -17,7 +17,7 @@ typedef struct utility_s {
 void init_utility(utility_t* p_utility, uint16_t nb_utility);
 void free_utility(utility_t* p_utility);
 
-void compute_all_utilities(utility_t* p_utilitiy, int8_t (*result_game)(uint16_t, uint16_t));
+void compute_all_utilities(utility_t* p_utilitiy, game_t* game);
 void accumulate_regret(player_t* p_player, player_t* p_player_other, utility_t* p_utility);
 
 void print_utilities(utility_t* p_utility);

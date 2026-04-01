@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "xorshiro256.h"
 #include "combinatory.h"
+#include "game.h"
 
 // structure that holds all information needed for a CRF
 typedef struct player_s {
@@ -30,7 +31,7 @@ void compute_actions(player_t* p_player, player_t* p_player_other);
 void compute_average_strategies(player_t* p_player, player_t* p_player_other);
 
 // prettifying functions
-void print_avg_strategies(player_t* p_player, player_t* p_player_other, uint16_t b, uint16_t s);
+void print_avg_strategies(player_t* p_player, player_t* p_player_other, game_t* game);
 void export_pure_strategies(FILE* f, uint16_t nstrat);
 void export_avg_strategies(FILE* f, player_t* p_player);
 #endif // PLAYER_H__

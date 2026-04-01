@@ -10,4 +10,6 @@ uint8_t lexicographic_combinations(uint16_t, uint16_t, uint16_t*);
 uint16_t encode_combinatorial_number_system(uint16_t*, uint16_t, uint16_t);
 uint16_t* decode_combinatorial_number_system(uint16_t, uint16_t, uint16_t);
 uint16_t* decode_blotto_configuration(uint16_t, uint16_t, uint16_t);
+void print_blotto_configuration(uint16_t, uint16_t, uint16_t);
+
 #endif // COMBINATORY_H__

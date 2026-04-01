@@ -124,19 +124,21 @@ void print_blotto_strategy(uint16_t coded_strat, uint16_t nb_battlefield, uint16
     }
 }
 
-void print_avg_strategies(player_t* p_player, player_t* p_player_other, uint16_t b, uint16_t s) 
+void print_avg_strategies(player_t* p_player, player_t* p_player_other, game_t* game) 
 {
     printf("Nash strategies :\n");
     printf("Action:\tplayer 1\tplayer 2\n");
     for(int i = 0; i < p_player->nb_cases; i++) 
     {
-        // TODO : make it not specific to blotto
-        uint16_t* d = decode_blotto_configuration(i, b, s);
-        for (int j = 0; j < b; j++)
+        switch (game->type)
         {
-            printf("%u, ", d[j]);
+            case GAME_RPS:
+                printf("%u, ", i);
+            break;
+            case GAME_BLT:
+                print_blotto_configuration(i, game->blt.nb_battlefield, game->blt.nb_soldier);
+            break;
         }
-        free(d);
         printf(
             ":\t%.7f\t%.7f\n",
             p_player->avg_strategy[i],
