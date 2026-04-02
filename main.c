@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     }
 
     set_seed(seed);
-    printf("Executing Monte-Carlo CRF for %llu steps with seed %llu\n", N, seed);
+    printf("Executing Monte-Carlo CFR for %llu steps with seed %llu\n", N, seed);
     export_pure_strategies(f, game.nb_pure_strategies);
     for(uint64_t j = 0; j < N; j++) 
     {
