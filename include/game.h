@@ -16,7 +16,6 @@ typedef enum RPS {
     NUMBER_CASES,
 } RPS;
 
-
 typedef enum GAME_TYPE {
     GAME_RPS,
     GAME_BLT,
@@ -44,5 +43,8 @@ struct game_s {
     uint16_t nb_pure_strategies;
     int8_t (*result)(game_t*, uint16_t, uint16_t);
 };
+
+int init_game_rps(game_t* game);
+int init_game_blt(game_t* game, uint16_t nb_battlefield, uint16_t nb_soldier);
 
 #endif // GAME_H__
