@@ -1,6 +1,8 @@
 *.cmake
 *.exe
 *.csv
+*.gif
+!doc/*.gif
 
 # generic folder
 build

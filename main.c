@@ -18,6 +18,18 @@ int main(int argc, char *argv[])
     FILE* f = fopen("export_avg_strategy.csv", "w");
     game_t game;
 
+    uint64_t seed = 10;
+    if (argc >= 3)
+    {
+        seed = atoll(argv[2]);
+    }
+
+    uint64_t N = 100;
+    if (argc >= 4) 
+    {
+        N = atoll(argv[3]);
+    }
+
     if (argc >= 2) 
     {
         if (!strcmp(argv[1], "RPS"))
@@ -28,13 +40,13 @@ int main(int argc, char *argv[])
         {
             uint16_t nb_battlefield = 3;
             uint16_t nb_soldier = 5;
-            if(argc >= 4)
-            {
-                nb_battlefield = atoi(argv[3]);
-            }
             if(argc >= 5)
             {
-                nb_soldier = atoi(argv[4]);
+                nb_battlefield = atoi(argv[4]);
+            }
+            if(argc >= 6)
+            {
+                nb_soldier = atoi(argv[5]);
             }
             if (init_game_blt(&game, nb_battlefield, nb_soldier) == EXIT_FAILURE)
             {
@@ -62,14 +74,8 @@ int main(int argc, char *argv[])
         print_utilities(&utilities);
     }
 
-    set_seed(20);
-
-    uint64_t N = 100;
-    if (argc >= 3) 
-    {
-        N = atoll(argv[2]);
-    }
-    printf("Executing Monte-Carlo CRF for %llu steps\n", N);
+    set_seed(seed);
+    printf("Executing Monte-Carlo CRF for %llu steps with seed %llu\n", N, seed);
     export_pure_strategies(f, game.nb_pure_strategies);
     for(uint64_t j = 0; j < N; j++) 
     {

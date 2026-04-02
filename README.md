@@ -66,7 +66,7 @@ make anim
 
 For a Colonel Blotto with 3 battlefields and 5 soldiers using a seed of 20, we have the following average strategies:
 
-![Visualization of Blotto convergence](average_strategies.gif)
+![Visualization of Blotto convergence](doc/average_strategies.gif)
 
 ## Note concerning strategy indeces
 
