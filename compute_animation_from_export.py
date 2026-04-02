@@ -27,7 +27,7 @@ def prepare_animation(ax: Axes, pd_data: pd.DataFrame, bar_container: BarContain
 
 
 def main() -> None:
-    pd_data = pd.read_csv("export_avg_strategy.csv", sep=';')
+    pd_data = pd.read_csv("export_avg_strategy.csv", sep=";")
     nb_frames: int = pd_data.shape[0] if pd_data.shape[0] < 100 else 100
     frames: NDArray[np.int64] = np.linspace(0, pd_data.shape[0], num=nb_frames, dtype=int, endpoint=False)
     fig, ax = plt.subplots()
@@ -44,7 +44,7 @@ def main() -> None:
     ani = animation.FuncAnimation(fig, prepare_animation(ax, pd_data, bar_container), frames, repeat=False, blit=True)
 
     writervideo = animation.PillowWriter(fps=60)
-    ani.save('histo.gif', writer=writervideo)
+    ani.save("average_strategies.gif", writer=writervideo)
     plt.close()
 
 if __name__ == "__main__":
